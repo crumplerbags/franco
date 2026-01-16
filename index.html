@@ -19,10 +19,9 @@
       z-index: 9999999;
       pointer-events: none;
 
-      /* Apply colour effect to the container (more reliable in messy CSS environments) */
-      filter: hue-rotate(var(--hue, 0deg)) saturate(2) contrast(1.05) !important;
-      transition: filter 140ms linear;
-      will-change: left, top, transform, filter;
+      /* no colour change / filter */
+      transition: transform 140ms linear;
+      will-change: left, top, transform;
     }
 
     .image-container img {
@@ -56,17 +55,6 @@
     const repelForce = 15;
     let targetRotation = 0;
 
-    let wasColliding = false;
-
-    function randomiseHue() {
-  const minHue = 30;
-  const maxHue = 330;
-  const hue = Math.floor(minHue + Math.random() * (maxHue - minHue));
-  imgBox.style.setProperty('--hue', `${hue}deg`);
-}
-
-    randomiseHue();
-
     function updatePosition() {
       velocity.y += gravity;
 
@@ -78,34 +66,21 @@
       const minY = imgHeight / 2;
       const maxY = window.innerHeight - imgHeight / 2;
 
-      let collidedThisFrame = false;
-
       if (pos.x <= minX) {
         pos.x = minX;
         velocity.x = Math.abs(velocity.x) * bounceFactor;
-        collidedThisFrame = true;
       } else if (pos.x >= maxX) {
         pos.x = maxX;
         velocity.x = -Math.abs(velocity.x) * bounceFactor;
-        collidedThisFrame = true;
       }
 
       if (pos.y <= minY) {
         pos.y = minY;
         velocity.y = Math.abs(velocity.y) * bounceFactor;
-        collidedThisFrame = true;
       } else if (pos.y >= maxY) {
         pos.y = maxY;
         velocity.y = -Math.abs(velocity.y) * bounceFactor;
-        collidedThisFrame = true;
       }
-
-      // Change colour only on "new" wall hit (not while stuck on the wall)
-      if (collidedThisFrame && !wasColliding) {
-        randomiseHue();
-        console.log('bounce -> colour change'); // DEBUG: should print only on new hits
-      }
-      wasColliding = collidedThisFrame;
 
       imgBox.style.left = `${pos.x}px`;
       imgBox.style.top = `${pos.y}px`;
@@ -146,9 +121,6 @@
       pos.x = Math.min(Math.max(pos.x, minX), maxX);
       pos.y = Math.min(Math.max(pos.y, minY), maxY);
     });
-
-    // DEBUG: manual colour change test
-    // Run in console: document.getElementById('imgBox').style.setProperty('--hue', '180deg')
   </script>
 </body>
 </html>
